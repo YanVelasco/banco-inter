@@ -34,7 +34,4 @@ public abstract class Usuario {
     @JoinColumn(name = "carteira_id", referencedColumnName = "id")
     private Carteira carteira;
 
-    public String getDocumento() {
-        return documento;
-    }
 }
