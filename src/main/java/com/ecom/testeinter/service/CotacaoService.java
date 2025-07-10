@@ -17,11 +17,14 @@ public class CotacaoService {
 
     private static final String URL_TEMPLATE = "https://olinda.bcb.gov.br/olinda/servico/PTAX/versao/v1/odata/CotacaoDolarDia(dataCotacao=@dataCotacao)?@dataCotacao='%s'&$top=100&$format=json";
 
-    @Autowired
-    private RedisTemplate<String, Double> redisTemplate;
+    private final RedisTemplate<String, Double> redisTemplate;
 
-    @Autowired
-    private RestTemplate restTemplate;
+    private final RestTemplate restTemplate;
+
+    public CotacaoService(RedisTemplate<String, Double> redisTemplate, RestTemplate restTemplate) {
+        this.redisTemplate = redisTemplate;
+        this.restTemplate = restTemplate;
+    }
 
     @Cacheable("cotacaoDolar")
     public Double obterCotacaoDolar(LocalDate data) {
