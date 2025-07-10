@@ -3,6 +3,7 @@ package com.ecom.testeinter.controller;
 import com.ecom.testeinter.dto.UsuarioRequestDTO;
 import com.ecom.testeinter.dto.UsuarioResponseDTO;
 import com.ecom.testeinter.mapper.UsuarioMapper;
+import com.ecom.testeinter.model.DocumentoValidator;
 import com.ecom.testeinter.model.Usuario;
 import com.ecom.testeinter.service.UsuarioService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -36,6 +37,13 @@ public class UsuarioController {
     @PostMapping
     public ResponseEntity<UsuarioResponseDTO> cadastrarUsuario(@RequestBody UsuarioRequestDTO usuarioRequestDTO) {
         try {
+            if (usuarioRequestDTO.getDocumento().length() == 11 && !DocumentoValidator.isCPF(usuarioRequestDTO.getDocumento())) {
+                throw new IllegalArgumentException("CPF inválido.");
+            }
+            if (usuarioRequestDTO.getDocumento().length() == 14 && !DocumentoValidator.isCNPJ(usuarioRequestDTO.getDocumento())) {
+                throw new IllegalArgumentException("CNPJ inválido.");
+            }
+
             Usuario usuario = usuarioMapper.toEntity(usuarioRequestDTO);
             Usuario novoUsuario = usuarioService.cadastrarUsuario(usuario);
             UsuarioResponseDTO responseDTO = usuarioMapper.toDTO(novoUsuario);

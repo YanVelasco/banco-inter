@@ -1,12 +1,12 @@
 # Serviço de Remessa - Desafio Inter
 
 ## Descrição
-Este projeto é uma API RESTFul para realizar remessas entre usuários, com conversão de moeda de Real para Dólar. Ele utiliza Spring Boot, PostgreSQL, Redis e integra com a API pública do Banco Central para obter a cotação do dólar.
+Este projeto é uma API RESTFul para realizar remessas entre usuários, com conversão de moeda de Real para Dólar. Ele utiliza Spring Boot, Postgres, Redis e integra com a API pública do Banco Central para obter a cotação do dólar.
 
 ## Tecnologias Utilizadas
 - **Java 17**
 - **Spring Boot**
-- **PostgreSQL**
+- **Postgres**
 - **Redis**
 - **Docker** e **Docker Compose**
 - **JUnit 5**
@@ -56,15 +56,32 @@ http://localhost:8080/swagger-ui.html
   "documento": "12345678901"
 }
 ```
+- Exemplo de Resposta:
+```json
+{
+  "id": "123e4567-e89b-12d3-a456-426614174000",
+  "nomeCompleto": "João Silva",
+  "email": "joao@teste.com",
+  "documento": "12345678901"
+}
+```
 
 ### 2. Realizar Remessa
 **POST** `/api/remessas`
 - Body:
 ```json
 {
-  "remetenteId": "<UUID>",
-  "destinatarioId": "<UUID>",
+  "remetenteId": "123e4567-e89b-12d3-a456-426614174000",
+  "destinatarioId": "123e4567-e89b-12d3-a456-426614174001",
   "valorReais": 1000.0
+}
+```
+- Exemplo de Resposta:
+```json
+{
+  "remetenteId": "123e4567-e89b-12d3-a456-426614174000",
+  "destinatarioId": "123e4567-e89b-12d3-a456-426614174001",
+  "valorConvertidoDolares": 200.0
 }
 ```
 
