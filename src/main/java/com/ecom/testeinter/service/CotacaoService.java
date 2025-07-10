@@ -1,0 +1,61 @@
+package com.ecom.testeinter.service;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
+
+import java.time.DayOfWeek;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
+
+@Service
+public class CotacaoService {
+
+    private static final String URL_TEMPLATE = "https://olinda.bcb.gov.br/olinda/servico/PTAX/versao/v1/odata/CotacaoDolarDia(dataCotacao=@dataCotacao)?@dataCotacao='%s'&$top=100&$format=json";
+
+    @Autowired
+    private RedisTemplate<String, Double> redisTemplate;
+
+    @Autowired
+    private RestTemplate restTemplate;
+
+    @Cacheable("cotacaoDolar")
+    public Double obterCotacaoDolar(LocalDate data) {
+        String cacheKey = "cotacaoDolar:" + data.toString();
+
+        Double cotacaoCache = redisTemplate.opsForValue().get(cacheKey);
+        if (cotacaoCache != null) {
+            return cotacaoCache;
+        }
+
+        while (data.getDayOfWeek() == DayOfWeek.SATURDAY || data.getDayOfWeek() == DayOfWeek.SUNDAY) {
+            data = data.minusDays(1);
+        }
+
+        String dataFormatada = data.format(DateTimeFormatter.ofPattern("MM-dd-yyyy"));
+        String url = String.format(URL_TEMPLATE, dataFormatada);
+
+        try {
+            Map<String, Object> resposta = restTemplate.getForObject(url, Map.class);
+            if (resposta != null && resposta.containsKey("value")) {
+                var valores = (Iterable<Map<String, Object>>) resposta.get("value");
+                for (Map<String, Object> valor : valores) {
+                    if (valor.containsKey("cotacaoCompra")) {
+                        Double cotacao = (Double) valor.get("cotacaoCompra");
+
+                        redisTemplate.opsForValue().set(cacheKey, cotacao, 1, TimeUnit.DAYS);
+                        return cotacao;
+                    }
+                }
+            }
+        } catch (Exception e) {
+            System.err.println("Erro ao obter cotação: " + e.getMessage());
+        }
+
+        return null;
+    }
+}
