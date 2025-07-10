@@ -2,6 +2,7 @@ package com.ecom.testeinter.mapper;
 
 import com.ecom.testeinter.dto.UsuarioRequestDTO;
 import com.ecom.testeinter.dto.UsuarioResponseDTO;
+import com.ecom.testeinter.model.PessoaFisica;
 import com.ecom.testeinter.model.Usuario;
 import org.springframework.stereotype.Component;
 
@@ -9,8 +10,7 @@ import org.springframework.stereotype.Component;
 public class UsuarioMapper {
 
     public Usuario toEntity(UsuarioRequestDTO dto) {
-        Usuario usuario = new Usuario() {
-        };
+        Usuario usuario = new PessoaFisica();
         usuario.setNomeCompleto(dto.getNomeCompleto());
         usuario.setEmail(dto.getEmail());
         usuario.setSenha(dto.getSenha());
