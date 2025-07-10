@@ -7,7 +7,7 @@ services:
       POSTGRES_PASSWORD: admin
       POSTGRES_DB: teste_inter
     ports:
-      - "5433:5432" # Alterada a porta externa para 5433
+      - "5433:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
