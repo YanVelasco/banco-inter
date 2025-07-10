@@ -1,0 +1,57 @@
+{
+  "info": {
+    "name": "Teste Inter API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Cadastrar Usuário",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"nomeCompleto\": \"João Silva\",\n  \"email\": \"joao@teste.com\",\n  \"senha\": \"123456\",\n  \"documento\": \"12345678901\"\n}"
+        },
+        "url": {
+          "raw": "http://localhost:8080/api/usuarios",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8080",
+          "path": ["api", "usuarios"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Realizar Remessa",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"remetenteId\": \"<UUID_REMETENTE>\",\n  \"destinatarioId\": \"<UUID_DESTINATARIO>\",\n  \"valorReais\": 1000.0\n}"
+        },
+        "url": {
+          "raw": "http://localhost:8080/api/remessas",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8080",
+          "path": ["api", "remessas"]
+        }
+      },
+      "response": []
+    }
+  ]
+}
+
