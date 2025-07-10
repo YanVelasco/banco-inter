@@ -9,6 +9,7 @@ import org.springframework.web.client.RestTemplate;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
@@ -28,15 +29,15 @@ public class CotacaoService {
 
     @Cacheable("cotacaoDolar")
     public Double obterCotacaoDolar(LocalDate data) {
-        String cacheKey = "cotacaoDolar:" + data.toString();
+        while (data.getDayOfWeek() == DayOfWeek.SATURDAY || data.getDayOfWeek() == DayOfWeek.SUNDAY) {
+            data = data.minusDays(1);
+        }
+
+        String cacheKey = "cotacaoDolar:" + data;
 
         Double cotacaoCache = redisTemplate.opsForValue().get(cacheKey);
         if (cotacaoCache != null) {
             return cotacaoCache;
-        }
-
-        while (data.getDayOfWeek() == DayOfWeek.SATURDAY || data.getDayOfWeek() == DayOfWeek.SUNDAY) {
-            data = data.minusDays(1);
         }
 
         String dataFormatada = data.format(DateTimeFormatter.ofPattern("MM-dd-yyyy"));
@@ -45,7 +46,7 @@ public class CotacaoService {
         try {
             Map<String, Object> resposta = restTemplate.getForObject(url, Map.class);
             if (resposta != null && resposta.containsKey("value")) {
-                var valores = (Iterable<Map<String, Object>>) resposta.get("value");
+                List<Map<String, Object>> valores = (List<Map<String, Object>>) resposta.get("value");
                 for (Map<String, Object> valor : valores) {
                     if (valor.containsKey("cotacaoCompra")) {
                         Double cotacao = (Double) valor.get("cotacaoCompra");
