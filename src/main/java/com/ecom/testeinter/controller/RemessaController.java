@@ -8,6 +8,11 @@ import com.ecom.testeinter.model.Usuario;
 import com.ecom.testeinter.service.CotacaoService;
 import com.ecom.testeinter.service.RemessaService;
 import com.ecom.testeinter.service.UsuarioService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -33,6 +38,12 @@ public class RemessaController {
         this.cotacaoService = cotacaoService;
     }
 
+    @Operation(summary = "Realizar remessa entre usuários", description = "Realiza uma remessa entre usuários com conversão de moeda de Real para Dólar.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Remessa realizada com sucesso", content = @Content(mediaType = "application/json", schema = @Schema(implementation = RemessaResponseDTO.class))),
+            @ApiResponse(responseCode = "404", description = "Usuário não encontrado", content = @Content),
+            @ApiResponse(responseCode = "400", description = "Erro na requisição", content = @Content)
+    })
     @PostMapping
     public ResponseEntity<RemessaResponseDTO> realizarRemessa(@Valid @RequestBody RemessaRequestDTO remessaRequestDTO) {
         try {
