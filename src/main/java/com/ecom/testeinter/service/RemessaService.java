@@ -1,6 +1,7 @@
 package com.ecom.testeinter.service;
 
 import com.ecom.testeinter.exception.LimiteDiarioExcedidoException;
+import com.ecom.testeinter.exception.MoedaInvalidaException;
 import com.ecom.testeinter.exception.SaldoInsuficienteException;
 import com.ecom.testeinter.model.Carteira;
 import com.ecom.testeinter.model.PessoaFisica;
@@ -53,7 +54,7 @@ public class RemessaService {
         }
 
         if (!"reais".equalsIgnoreCase(moeda) && !"dolares".equalsIgnoreCase(moeda)) {
-            throw new IllegalArgumentException("Moeda inválida. Use 'reais' ou 'dolares'.");
+            throw new MoedaInvalidaException("Moeda inválida. Use 'reais' ou 'dolares'.");
         }
 
         if ("reais".equalsIgnoreCase(moeda)) {

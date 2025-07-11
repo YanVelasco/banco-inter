@@ -3,6 +3,7 @@ package com.ecom.testeinter.config;
 import com.ecom.testeinter.exception.UsuarioNotFoundException;
 import com.ecom.testeinter.exception.SaldoInsuficienteException;
 import com.ecom.testeinter.exception.LimiteDiarioExcedidoException;
+import com.ecom.testeinter.exception.MoedaInvalidaException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -51,6 +52,14 @@ public class GlobalExceptionHandler {
     public ResponseEntity<Object> handleLimiteDiarioExcedidoException(LimiteDiarioExcedidoException ex, WebRequest request) {
         Map<String, Object> body = new HashMap<>();
         body.put("error", "Limite Diário Excedido");
+        body.put("message", ex.getMessage());
+        return new ResponseEntity<>(body, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(MoedaInvalidaException.class)
+    public ResponseEntity<Object> handleMoedaInvalidaException(MoedaInvalidaException ex, WebRequest request) {
+        Map<String, Object> body = new HashMap<>();
+        body.put("error", "Moeda Inválida");
         body.put("message", ex.getMessage());
         return new ResponseEntity<>(body, HttpStatus.BAD_REQUEST);
     }
