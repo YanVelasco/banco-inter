@@ -4,7 +4,6 @@ import com.ecom.testeinter.exception.LimiteDiarioExcedidoException;
 import com.ecom.testeinter.exception.SaldoInsuficienteException;
 import com.ecom.testeinter.model.Carteira;
 import com.ecom.testeinter.model.PessoaFisica;
-import com.ecom.testeinter.model.PessoaJuridica;
 import com.ecom.testeinter.model.Usuario;
 import com.ecom.testeinter.repository.CarteiraRepository;
 import org.junit.jupiter.api.AfterEach;
@@ -35,6 +34,7 @@ class RemessaServiceTest {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
+        when(carteiraRepository.findByUsuarioId(any())).thenReturn(Optional.empty());
     }
 
     @AfterEach
@@ -51,7 +51,7 @@ class RemessaServiceTest {
         when(carteiraRepository.findById(remetente.getId())).thenReturn(Optional.of(carteiraRemetente));
 
         SaldoInsuficienteException exception = assertThrows(SaldoInsuficienteException.class, () ->
-                remessaService.realizarRemessa(remetente, new PessoaFisica(), 100.0));
+                remessaService.realizarRemessa(remetente, new PessoaFisica(), 100.0, "BRL"));
 
         assertEquals("Saldo insuficiente na carteira do remetente.", exception.getMessage());
     }
@@ -66,7 +66,7 @@ class RemessaServiceTest {
         when(carteiraRepository.findById(remetente.getId())).thenReturn(Optional.of(carteiraRemetente));
 
         LimiteDiarioExcedidoException exception = assertThrows(LimiteDiarioExcedidoException.class, () ->
-                remessaService.realizarRemessa(remetente, new PessoaFisica(), PessoaFisica.LIMITE_DIARIO + 1));
+                remessaService.realizarRemessa(remetente, new PessoaFisica(), PessoaFisica.LIMITE_DIARIO + 1, "BRL"));
 
         assertEquals("Valor excede o limite diário permitido para o usuário.", exception.getMessage());
     }
@@ -82,7 +82,7 @@ class RemessaServiceTest {
         when(cotacaoService.obterCotacaoDolar(LocalDate.now())).thenReturn(null);
 
         IllegalStateException exception = assertThrows(IllegalStateException.class, () ->
-                remessaService.realizarRemessa(remetente, new PessoaFisica(), 100.0));
+                remessaService.realizarRemessa(remetente, new PessoaFisica(), 100.0, "USD"));
 
         assertEquals("Não foi possível obter a cotação do dólar.", exception.getMessage());
     }
@@ -103,7 +103,7 @@ class RemessaServiceTest {
         when(carteiraRepository.findById(destinatario.getId())).thenReturn(Optional.of(carteiraDestinatario));
         when(cotacaoService.obterCotacaoDolar(LocalDate.now())).thenReturn(5.0);
 
-        remessaService.realizarRemessa(remetente, destinatario, 500.0);
+        remessaService.realizarRemessa(remetente, destinatario, 500.0, "USD");
 
         assertEquals(500.0, carteiraRemetente.getSaldoReais());
         assertEquals(150.0, carteiraDestinatario.getSaldoDolares());

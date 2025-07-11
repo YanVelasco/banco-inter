@@ -1,10 +1,7 @@
 package com.ecom.testeinter.service;
 
-import com.ecom.testeinter.exception.LimiteDiarioExcedidoException;
 import com.ecom.testeinter.exception.SaldoInsuficienteException;
 import com.ecom.testeinter.model.Carteira;
-import com.ecom.testeinter.model.PessoaFisica;
-import com.ecom.testeinter.model.PessoaJuridica;
 import com.ecom.testeinter.model.Usuario;
 import com.ecom.testeinter.repository.CarteiraRepository;
 import org.springframework.stereotype.Service;
@@ -26,7 +23,6 @@ public class RemessaService {
 
     @Transactional
     public void realizarRemessa(Usuario remetente, Usuario destinatario, double valor, String moeda) {
-        // Buscar ou criar carteira do remetente
         Carteira carteiraRemetente = carteiraRepository.findByUsuarioId(remetente.getId())
                 .orElseGet(() -> {
                     Carteira novaCarteira = new Carteira();
@@ -36,7 +32,6 @@ public class RemessaService {
                     return carteiraRepository.save(novaCarteira);
                 });
 
-        // Buscar ou criar carteira do destinatário
         Carteira carteiraDestinatario = carteiraRepository.findByUsuarioId(destinatario.getId())
                 .orElseGet(() -> {
                     Carteira novaCarteira = new Carteira();
@@ -46,13 +41,11 @@ public class RemessaService {
                     return carteiraRepository.save(novaCarteira);
                 });
 
-        // Obter cotação do dólar
         Double cotacaoDolar = cotacaoService.obterCotacaoDolar(LocalDate.now());
         if (cotacaoDolar == null) {
             throw new IllegalStateException("Não foi possível obter a cotação do dólar.");
         }
 
-        // Verificar e deduzir saldo do remetente
         if ("reais".equalsIgnoreCase(moeda)) {
             if (carteiraRemetente.getSaldoReais() >= valor) {
                 carteiraRemetente.setSaldoReais(carteiraRemetente.getSaldoReais() - valor);
@@ -71,10 +64,8 @@ public class RemessaService {
             throw new IllegalArgumentException("Moeda inválida. Use 'reais' ou 'dolares'.");
         }
 
-        // Atualizar saldo do destinatário
         carteiraDestinatario.setSaldoReais(carteiraDestinatario.getSaldoReais() + valor);
 
-        // Salvar alterações nas carteiras
         carteiraRepository.save(carteiraRemetente);
         carteiraRepository.save(carteiraDestinatario);
     }
