@@ -1,7 +1,9 @@
 package com.ecom.testeinter.service;
 
+import com.ecom.testeinter.exception.LimiteDiarioExcedidoException;
 import com.ecom.testeinter.exception.SaldoInsuficienteException;
 import com.ecom.testeinter.model.Carteira;
+import com.ecom.testeinter.model.PessoaFisica;
 import com.ecom.testeinter.model.Usuario;
 import com.ecom.testeinter.repository.CarteiraRepository;
 import org.springframework.stereotype.Service;
@@ -46,6 +48,14 @@ public class RemessaService {
             throw new IllegalStateException("Não foi possível obter a cotação do dólar.");
         }
 
+        if (remetente instanceof PessoaFisica && valor > PessoaFisica.LIMITE_DIARIO) {
+            throw new LimiteDiarioExcedidoException("Valor excede o limite diário permitido para o usuário.");
+        }
+
+        if (!"reais".equalsIgnoreCase(moeda) && !"dolares".equalsIgnoreCase(moeda)) {
+            throw new IllegalArgumentException("Moeda inválida. Use 'reais' ou 'dolares'.");
+        }
+
         if ("reais".equalsIgnoreCase(moeda)) {
             if (carteiraRemetente.getSaldoReais() >= valor) {
                 carteiraRemetente.setSaldoReais(carteiraRemetente.getSaldoReais() - valor);
@@ -60,8 +70,6 @@ public class RemessaService {
             } else {
                 throw new SaldoInsuficienteException("Saldo insuficiente em dólares na carteira do remetente.");
             }
-        } else {
-            throw new IllegalArgumentException("Moeda inválida. Use 'reais' ou 'dolares'.");
         }
 
         carteiraDestinatario.setSaldoReais(carteiraDestinatario.getSaldoReais() + valor);
