@@ -71,9 +71,10 @@ http://localhost:8080/swagger-ui.html
 - Body:
 ```json
 {
-  "remetenteId": "123e4567-e89b-12d3-a456-426614174000",
-  "destinatarioId": "123e4567-e89b-12d3-a456-426614174001",
-  "valorReais": 1000.0
+  "remetenteId": "0bd2739d-e926-44ad-bdf5-49851410f627",
+  "destinatarioId": "4bdf8485-13ac-4217-ba3f-6260527f4466",
+  "valorReais": 50.0,
+  "moeda": "dolares"
 }
 ```
 - Exemplo de Resposta:
@@ -113,6 +114,14 @@ curl -X POST "http://localhost:8080/api/usuarios/{id}/adicionar-saldo?valor=100.
   - `200 OK`: Saldo adicionado com sucesso.
   - `400 Bad Request`: Erro na requisição (ex.: moeda inválida).
   - `404 Not Found`: Usuário não encontrado.
+
+### 4. Limites e Exceções
+
+#### Limite Diário de Transações
+O sistema possui um limite diário para transações de usuários do tipo Pessoa Física. Caso o limite seja excedido, uma exceção `LimiteDiarioExcedidoException` será lançada.
+
+#### Moedas Suportadas
+Atualmente, o sistema suporta apenas as moedas `reais` e `dolares`. Caso uma moeda inválida seja informada, uma exceção `IllegalArgumentException` será lançada com a mensagem "Moeda inválida. Use 'reais' ou 'dolares'."
 
 ## Observações
 - A cotação do dólar é ajustada para o último dia útil em finais de semana.

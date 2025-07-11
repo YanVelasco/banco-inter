@@ -40,7 +40,7 @@
         ],
         "body": {
           "mode": "raw",
-          "raw": "{\n  \"remetenteId\": \"<UUID_REMETENTE>\",\n  \"destinatarioId\": \"<UUID_DESTINATARIO>\",\n  \"valorReais\": 1000.0\n}"
+          "raw": "{\n  \"remetenteId\": \"0bd2739d-e926-44ad-bdf5-49851410f627\",\n  \"destinatarioId\": \"4bdf8485-13ac-4217-ba3f-6260527f4466\",\n  \"valorReais\": 50.0,\n  \"moeda\": \"dolares\"\n}"
         },
         "url": {
           "raw": "http://localhost:8080/api/remessas",
@@ -76,6 +76,30 @@
             { "key": "valor", "value": "100.0" },
             { "key": "moeda", "value": "reais" }
           ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Exceder Limite Diário",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"remetenteId\": \"<UUID_REMETENTE>\",\n  \"destinatarioId\": \"<UUID_DESTINATARIO>\",\n  \"valorReais\": 100000.0\n}"
+        },
+        "url": {
+          "raw": "http://localhost:8080/api/remessas",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8080",
+          "path": ["api", "remessas"]
         }
       },
       "response": []
