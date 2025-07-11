@@ -89,8 +89,8 @@ class CotacaoServiceTest {
 
     @Test
     void obterCotacaoDolar_ComFinalDeSemana_DeveAjustarData() {
-        LocalDate sabado = LocalDate.of(2025, 7, 12); // Sábado
-        LocalDate sextaFeira = LocalDate.of(2025, 7, 11); // Sexta-feira
+        LocalDate sabado = LocalDate.of(2025, 7, 12);
+        LocalDate sextaFeira = LocalDate.of(2025, 7, 11);
         String cacheKey = "cotacaoDolar:" + sextaFeira;
         Double cotacaoEsperada = 5.25;
 

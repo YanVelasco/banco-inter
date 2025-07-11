@@ -50,7 +50,7 @@ public class RemessaController {
             Usuario remetente = usuarioService.buscarPorId(remessaRequestDTO.getRemetenteId()).orElseThrow(() -> new UsuarioNotFoundException("Remetente não encontrado."));
             Usuario destinatario = usuarioService.buscarPorId(remessaRequestDTO.getDestinatarioId()).orElseThrow(() -> new UsuarioNotFoundException("Destinatário não encontrado."));
 
-            remessaService.realizarRemessa(remetente, destinatario, remessaRequestDTO.getValorReais());
+            remessaService.realizarRemessa(remetente, destinatario, remessaRequestDTO.getValorReais(), remessaRequestDTO.getMoeda());
 
             double valorConvertidoDolares = remessaRequestDTO.getValorReais() / cotacaoService.obterCotacaoDolar(LocalDate.now());
             RemessaResponseDTO responseDTO = remessaMapper.toResponseDTO(remessaRequestDTO, valorConvertidoDolares, remetente, destinatario);

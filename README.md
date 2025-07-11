@@ -85,6 +85,35 @@ http://localhost:8080/swagger-ui.html
 }
 ```
 
+### 3. Adicionar Saldo à Carteira
+**POST** `/api/usuarios/{id}/adicionar-saldo`
+
+Este endpoint permite adicionar saldo em reais ou dólares à carteira de um usuário.
+
+- **Parâmetros**:
+  - `id` (path): ID do usuário.
+  - `valor` (query): Valor a ser adicionado.
+  - `moeda` (query): Moeda do saldo a ser adicionado (`reais` ou `dolares`).
+
+- **Exemplo de Requisição**:
+```bash
+curl -X POST "http://localhost:8080/api/usuarios/{id}/adicionar-saldo?valor=100.0&moeda=reais"
+```
+
+- **Exemplo de Requisição em JSON**:
+```json
+{
+  "id": "123e4567-e89b-12d3-a456-426614174000",
+  "valor": 100.0,
+  "moeda": "reais"
+}
+```
+
+- **Respostas**:
+  - `200 OK`: Saldo adicionado com sucesso.
+  - `400 Bad Request`: Erro na requisição (ex.: moeda inválida).
+  - `404 Not Found`: Usuário não encontrado.
+
 ## Observações
 - A cotação do dólar é ajustada para o último dia útil em finais de semana.
 - Limites diários:

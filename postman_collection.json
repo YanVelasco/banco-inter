@@ -51,7 +51,34 @@
         }
       },
       "response": []
+    },
+    {
+      "name": "Adicionar Saldo à Carteira",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"valor\": 100.0,\n  \"moeda\": \"reais\"\n}"
+        },
+        "url": {
+          "raw": "http://localhost:8080/api/usuarios/<UUID_USUARIO>/adicionar-saldo?valor=100.0&moeda=reais",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8080",
+          "path": ["api", "usuarios", "<UUID_USUARIO>", "adicionar-saldo"],
+          "query": [
+            { "key": "valor", "value": "100.0" },
+            { "key": "moeda", "value": "reais" }
+          ]
+        }
+      },
+      "response": []
     }
   ]
 }
-

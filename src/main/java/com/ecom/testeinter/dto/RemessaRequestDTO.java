@@ -25,4 +25,7 @@ public class RemessaRequestDTO {
     @Positive(message = "O valor da remessa deve ser positivo.")
     private double valorReais;
 
+    @Schema(description = "Moeda da remessa (reais ou dolares)", example = "reais")
+    @NotNull(message = "A moeda é obrigatória.")
+    private String moeda;
 }

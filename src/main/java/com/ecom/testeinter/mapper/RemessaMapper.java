@@ -5,6 +5,9 @@ import com.ecom.testeinter.dto.RemessaResponseDTO;
 import com.ecom.testeinter.model.Usuario;
 import org.springframework.stereotype.Component;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+
 @Component
 public class RemessaMapper {
 
@@ -12,7 +15,7 @@ public class RemessaMapper {
         RemessaResponseDTO responseDTO = new RemessaResponseDTO();
         responseDTO.setRemetenteId(remetente.getId());
         responseDTO.setDestinatarioId(destinatario.getId());
-        responseDTO.setValorConvertidoDolares(valorConvertidoDolares);
+        responseDTO.setValorConvertidoDolares(BigDecimal.valueOf(valorConvertidoDolares).setScale(2, RoundingMode.HALF_UP).doubleValue());
         return responseDTO;
     }
 }

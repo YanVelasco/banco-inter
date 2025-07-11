@@ -25,33 +25,57 @@ public class RemessaService {
     }
 
     @Transactional
-    public void realizarRemessa(Usuario remetente, Usuario destinatario, double valorReais) {
-        Carteira carteiraRemetente = carteiraRepository.findById(remetente.getId())
-                .orElseThrow(() -> new IllegalArgumentException("Carteira do remetente não encontrada."));
+    public void realizarRemessa(Usuario remetente, Usuario destinatario, double valor, String moeda) {
+        // Buscar ou criar carteira do remetente
+        Carteira carteiraRemetente = carteiraRepository.findByUsuarioId(remetente.getId())
+                .orElseGet(() -> {
+                    Carteira novaCarteira = new Carteira();
+                    novaCarteira.setUsuarioId(remetente.getId());
+                    novaCarteira.setSaldoReais(0.0);
+                    novaCarteira.setSaldoDolares(0.0);
+                    return carteiraRepository.save(novaCarteira);
+                });
 
-        if (carteiraRemetente.getSaldoReais() < valorReais) {
-            throw new SaldoInsuficienteException("Saldo insuficiente na carteira do remetente.");
-        }
+        // Buscar ou criar carteira do destinatário
+        Carteira carteiraDestinatario = carteiraRepository.findByUsuarioId(destinatario.getId())
+                .orElseGet(() -> {
+                    Carteira novaCarteira = new Carteira();
+                    novaCarteira.setUsuarioId(destinatario.getId());
+                    novaCarteira.setSaldoReais(0.0);
+                    novaCarteira.setSaldoDolares(0.0);
+                    return carteiraRepository.save(novaCarteira);
+                });
 
-        double limiteDiario = (remetente instanceof PessoaFisica) ? PessoaFisica.LIMITE_DIARIO : PessoaJuridica.LIMITE_DIARIO;
-        if (valorReais > limiteDiario) {
-            throw new LimiteDiarioExcedidoException("Valor excede o limite diário permitido para o usuário.");
-        }
-
+        // Obter cotação do dólar
         Double cotacaoDolar = cotacaoService.obterCotacaoDolar(LocalDate.now());
         if (cotacaoDolar == null) {
             throw new IllegalStateException("Não foi possível obter a cotação do dólar.");
         }
 
-        double valorDolares = valorReais / cotacaoDolar;
+        // Verificar e deduzir saldo do remetente
+        if ("reais".equalsIgnoreCase(moeda)) {
+            if (carteiraRemetente.getSaldoReais() >= valor) {
+                carteiraRemetente.setSaldoReais(carteiraRemetente.getSaldoReais() - valor);
+            } else {
+                throw new SaldoInsuficienteException("Saldo insuficiente em reais na carteira do remetente.");
+            }
+        } else if ("dolares".equalsIgnoreCase(moeda)) {
+            double valorConvertidoReais = valor * cotacaoDolar;
+            if (carteiraRemetente.getSaldoDolares() >= valor) {
+                carteiraRemetente.setSaldoDolares(carteiraRemetente.getSaldoDolares() - valor);
+                valor = valorConvertidoReais;
+            } else {
+                throw new SaldoInsuficienteException("Saldo insuficiente em dólares na carteira do remetente.");
+            }
+        } else {
+            throw new IllegalArgumentException("Moeda inválida. Use 'reais' ou 'dolares'.");
+        }
 
-        carteiraRemetente.setSaldoReais(carteiraRemetente.getSaldoReais() - valorReais);
+        // Atualizar saldo do destinatário
+        carteiraDestinatario.setSaldoReais(carteiraDestinatario.getSaldoReais() + valor);
+
+        // Salvar alterações nas carteiras
         carteiraRepository.save(carteiraRemetente);
-
-        Carteira carteiraDestinatario = carteiraRepository.findById(destinatario.getId())
-                .orElseThrow(() -> new IllegalArgumentException("Carteira do destinatário não encontrada."));
-
-        carteiraDestinatario.setSaldoDolares(carteiraDestinatario.getSaldoDolares() + valorDolares);
         carteiraRepository.save(carteiraDestinatario);
     }
 }
