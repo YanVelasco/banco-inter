@@ -129,6 +129,3 @@ Atualmente, o sistema suporta apenas as moedas `reais` e `dolares`. Caso uma moe
   - PF: R$ 10.000,00
   - PJ: R$ 50.000,00
 - Operações são transacionais e reversíveis em caso de falha.
-
-## Contato
-Para dúvidas ou sugestões, entre em contato pelo e-mail: suporte@testeinter.com.
